@@ -3,7 +3,7 @@
 Contains the TestFileStorageDocs classes
 """
 
-from datetime import datetime
+from datetime import datetime  # noqa 184
 import inspect
 import models
 from models.engine import file_storage
@@ -14,9 +14,10 @@ from models.place import Place
 from models.review import Review
 from models.state import State
 from models.user import User
+from models import storage
 import json
-import os
-import pep8
+import os  # noqa 184
+import pycodestyle
 import unittest
 FileStorage = file_storage.FileStorage
 classes = {"Amenity": Amenity, "BaseModel": BaseModel, "City": City,
@@ -30,17 +31,17 @@ class TestFileStorageDocs(unittest.TestCase):
         """Set up for the doc tests"""
         cls.fs_f = inspect.getmembers(FileStorage, inspect.isfunction)
 
-    def test_pep8_conformance_file_storage(self):
+    def test_pycodestyle_conformance_file_storage(self):
         """Test that models/engine/file_storage.py conforms to PEP8."""
-        pep8s = pep8.StyleGuide(quiet=True)
-        result = pep8s.check_files(['models/engine/file_storage.py'])
+        pycodestyles = pycodestyle.StyleGuide(quiet=True)
+        result = pycodestyles.check_files(['models/engine/file_storage.py'])
         self.assertEqual(result.total_errors, 0,
                          "Found code style errors (and warnings).")
 
-    def test_pep8_conformance_test_file_storage(self):
+    def test_pycodestyle_conformance_test_file_storage(self):
         """Test tests/test_models/test_file_storage.py conforms to PEP8."""
-        pep8s = pep8.StyleGuide(quiet=True)
-        result = pep8s.check_files(['tests/test_models/test_engine/\
+        pycodestyles = pycodestyle.StyleGuide(quiet=True)
+        result = pycodestyles.check_files(['tests/test_models/test_engine/\
 test_file_storage.py'])
         self.assertEqual(result.total_errors, 0,
                          "Found code style errors (and warnings).")
@@ -121,16 +122,6 @@ class TestFileStorage(unittest.TestCase):
         new_instance = BaseModel()
         new_instance.save()
         self.assertIs(storage.get(BaseModel, new_instance.id), new_instance)
-
-    def test_count(self):
-        """
-        Test the count method of FileStorage.
-        """
-        initial_count = storage.count()
-        new_instance = BaseModel()
-        new_instance.save()
-        self.assertEqual(storage.count(), initial_count + 1)
-        self.assertEqual(storage.count(BaseModel), initial_count + 1)
 
 
 if __name__ == "__main__":

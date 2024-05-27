@@ -2,12 +2,13 @@
 """
 Module for the link between Place objects and Amenity objects
 """
-from flask import abort, jsonify, request
+from flask import abort, jsonify, request  # noqa
 from api.v1.views import app_views
 from models import storage
 from models.place import Place
 from models.amenity import Amenity
 from os import getenv
+
 
 @app_views.route('/places/<place_id>/amenities', methods=['GET'])
 def get_place_amenities(place_id):

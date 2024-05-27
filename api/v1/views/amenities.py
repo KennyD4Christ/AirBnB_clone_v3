@@ -43,9 +43,9 @@ def create_amenity():
     """Creates a Amenity"""
     if not request.is_json:
         abort(400, description='Not a JSON')
+    data = request.get_json()
     if 'name' not in data:
         abort(400, description='Missing name')
-    data = request.get_json()
     new_amenity = Amenity(**data)
     storage.new(new_amenity)
     storage.save()

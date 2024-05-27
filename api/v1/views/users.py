@@ -61,8 +61,11 @@ def update_user(user_id):
     if not request.is_json:
         abort(400, description='Not a JSON')
     data = request.get_json()
+    valid_keys = ['id', 'email', 'created_at', 'updated_at']
+    if not any(key in data for key in valid_keys):
+        abort(400, description='No valid data provided for update')
     for key, value in data.items():
-        if key not in ['id', 'email', 'created_at', 'updated_at']:
+        if key not in valid_keys:
             setattr(user, key, value)
     user.save()
     return jsonify(user.to_dict()), 200

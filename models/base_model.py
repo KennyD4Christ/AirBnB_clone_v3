@@ -5,12 +5,12 @@ Contains class BaseModel
 
 from datetime import datetime
 import models
-from os import getenv
-import sqlalchemy
+from os import getenv  # noqa
+import sqlalchemy  # noqa
 from sqlalchemy import Column, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 import uuid
-import hashlib
+import hashlib  # noqa
 
 time = "%Y-%m-%dT%H:%M:%S.%f"
 

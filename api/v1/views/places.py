@@ -49,17 +49,17 @@ def create_place(city_id):
     city = storage.get(City, city_id)
     if city is None:
         abort(404)
-    if not request.json:
+    if not request.is_json:
         abort(400, 'Not a JSON')
-    if 'user_id' not in request.json:
+    data = request.get_json()
+    if 'user_id' not in data:
         abort(400, 'Missing user_id')
-    if 'name' not in request.json:
+    if 'name' not in data:
         abort(400, 'Missing name')
-    user_id = request.json['user_id']
+    user_id = dat['user_id']
     user = storage.get(User, user_id)
     if user is None:
         abort(404)
-    data = request.get_json()
     data['city_id'] = city_id
     place = Place(**data)
     place.save()
@@ -69,11 +69,11 @@ def create_place(city_id):
 @app_views.route('/places_search', methods=['POST'])
 def places_search():
     """Searches for Place objects based on JSON request"""
-    if not request.json:
+    if not request.is_json:
         abort(400, 'Not a JSON')
 
     # Get JSON data from request
-    json_data = request.json
+    json_data = request.get_json()
 
     # Extract states, cities, and amenities lists from JSON
     states = json_data.get('states', [])
@@ -81,30 +81,30 @@ def places_search():
     amenities = json_data.get('amenities', [])
 
     # Initialize list to store filtered places
-    filtered_places = []
+    filtered_places = set()
 
     # If states and cities lists are empty, retrieve all places
     if not states and not cities:
-        filtered_places = storage.all(Place).values()
+        filtered_places = set(storage.all(Place).values())
     else:
         # Get places based on states
         for state_id in states:
             state = storage.get(State, state_id)
             if state:
                 for city in state.cities:
-                    if city not in filtered_places:
-                        filtered_places.extend(city.places)
+                    filtered_places.update(city.places)
 
         # Get places based on cities
         for city_id in cities:
             city = storage.get(City, city_id)
-            if city and city not in filtered_places:
-                filtered_places.extend(city.places)
+            if city
+                filtered_places.update(city.places)
 
     # Filter places based on amenities
     if amenities:
         filtered_places = [place for place in filtered_places if all(
-            amenity_id in place.amenities for amenity_id in amenities
+            any(amenity.id == amenity_id for amenity in place.amenities) 
+            for amenity_id in amenities
         )]
     # Convert filtered places to dictionary representation
     places_dict = [place.to_dict() for place in filtered_places]
@@ -118,7 +118,7 @@ def update_place(place_id):
     place = storage.get(Place, place_id)
     if place is None:
         abort(404)
-    if not request.json:
+    if not request.is_json:
         abort(400, 'Not a JSON')
     data = request.get_json()
     for key, value in data.items():

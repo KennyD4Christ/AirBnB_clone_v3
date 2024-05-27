@@ -7,6 +7,7 @@ from flask import abort, jsonify, request
 from api.v1.views import app_views
 from models import storage
 from models.city import City
+from models.user import User
 
 
 @app_views.route('/users', methods=['GET'])
@@ -39,13 +40,13 @@ def delete_user(user_id):
 @app_views.route('/users', methods=['POST'])
 def create_user():
     """Creates a User"""
-    if not request.json:
-        abort(400, 'Not a JSON')
-    if 'email' not in request.json:
-        abort(400, 'Missing email')
-    if 'password' not in request.json:
-        abort(400, 'Missing password')
+    if not request.is_json:
+        abort(400, description='Not a JSON')
     data = request.get_json()
+    if 'email' not in data:
+        abort(400, description='Missing email')
+    if 'password' not in data:
+        abort(400, description='Missing password')
     user = User(**data)
     user.save()
     return jsonify(user.to_dict()), 201
@@ -57,8 +58,8 @@ def update_user(user_id):
     user = storage.get(User, user_id)
     if user is None:
         abort(404)
-    if not request.json:
-        abort(400, 'Not a JSON')
+    if not request.is_json:
+        abort(400, description='Not a JSON')
     data = request.get_json()
     for key, value in data.items():
         if key not in ['id', 'email', 'created_at', 'updated_at']:

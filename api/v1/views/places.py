@@ -56,7 +56,7 @@ def create_place(city_id):
         abort(400, 'Missing user_id')
     if 'name' not in data:
         abort(400, 'Missing name')
-    user_id = dat['user_id']
+    user_id = data['user_id']
     user = storage.get(User, user_id)
     if user is None:
         abort(404)
@@ -97,13 +97,13 @@ def places_search():
         # Get places based on cities
         for city_id in cities:
             city = storage.get(City, city_id)
-            if city
+            if city:
                 filtered_places.update(city.places)
 
     # Filter places based on amenities
     if amenities:
         filtered_places = [place for place in filtered_places if all(
-            any(amenity.id == amenity_id for amenity in place.amenities) 
+            any(amenity.id == amenity_id for amenity in place.amenities)
             for amenity_id in amenities
         )]
     # Convert filtered places to dictionary representation
